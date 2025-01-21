@@ -1,0 +1,21 @@
+# argocd/application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gitlab
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/YonatanG86/terraform-eks-argo.git' # Replace with your repo
+    path: kubernetes/gitlab
+    targetRevision: HEAD
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: gitlab
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,11 @@
+# kubernetes/gitlab/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitlab-config
+  namespace: gitlab
+data:
+  gitlab.rb: |
+    external_url 'http://gitlab.example.com:9090'
+    gitlab_rails['gitlab_shell_ssh_port'] = 22
+    prometheus['listen_address'] = '0.0.0.0:9090'

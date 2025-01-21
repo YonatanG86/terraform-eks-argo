@@ -1,0 +1,59 @@
+# kubernetes/gitlab/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab
+  namespace: gitlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab
+  template:
+    metadata:
+      labels:
+        app: gitlab
+    spec:
+      containers:
+        - name: gitlab
+          image: gitlab/gitlab-ce:latest
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: config
+              mountPath: /etc/gitlab
+            - name: logs
+              mountPath: /var/log/gitlab
+            - name: data
+              mountPath: /var/opt/gitlab
+          resources:
+            requests:
+              memory: '4Gi'
+              cpu: '2'
+            limits:
+              memory: '6Gi'
+              cpu: '4'
+          livenessProbe:
+            httpGet:
+              path: /users/sign_in
+              port: 9090
+            initialDelaySeconds: 180
+            timeoutSeconds: 15
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /users/sign_in
+              port: 9090
+            initialDelaySeconds: 180
+            timeoutSeconds: 15
+            periodSeconds: 30
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: gitlab-config
+        - name: logs
+          persistentVolumeClaim:
+            claimName: gitlab-logs
+        - name: data
+          persistentVolumeClaim:
+            claimName: gitlab-data
